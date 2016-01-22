@@ -29,8 +29,8 @@
 
 <template name="resolution">
   <li class="{{#if checked}}checked{{/if}}">
+  {{#if isOwner}}
     <input type="checkbox" checked="{{checked}}" class="toggle-checked">
-    {{#if isOwner}}
       <button class="toggle-private">
         {{#if private}}
           Private
@@ -38,8 +38,10 @@
           Public
         {{/if}}
       </button>
-    {{/if}}
+  {{/if}}
     <span class="text">{{title}}</span>
-    <button class="delete">Remove</button>
+    {{#if isOwner}}
+      <button class="delete">Remove</button>
+    {{/if}}
   </li>
 </template>

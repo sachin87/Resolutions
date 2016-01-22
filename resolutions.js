@@ -61,7 +61,12 @@ if (Meteor.isServer) {
   });
 
   Meteor.publish('resolutions', function(){
-    return Resolutions.find();
+    return Resolutions.find({
+      $or: [
+        {private: {$ne: true}},
+        {owner: this.userId}
+      ]
+    });
   })
 }
 
@@ -70,13 +75,22 @@ Meteor.methods({
     Resolutions.insert({
       title: title,
       createdAt: new Date(),
-      owner: Meteor.userId()
+      owner: Meteor.userId(),
+      private: false
     });
   },
   updateResolution: function(id, checked){
+    var res = Resolutions.findOne(id);
+    if(res.owner !== Meteor.userId()){
+      throw Meteor.Error('not-authorized');
+    }
     Resolutions.update(id, {$set: {checked: checked}});
   },
   deleteResolution: function(id){
+    var res = Resolutions.findOne(id);
+    if(res.owner !== Meteor.userId()){
+      throw Meteor.Error('not-authorized');
+    }
     Resolutions.remove(id);
   },
   setPrivate: function(id,private){
